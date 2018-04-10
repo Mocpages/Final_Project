@@ -1,9 +1,10 @@
 PlayState = Class{__includes = BaseState}
 
 function PlayState:init()
-    self.player = Player (VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2)
+    self.player = Player (VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2, self)
 
     self.map = Map(self.player)
+    self.player:setMap(self.map)
     self.direction = 0
     self.x = 0
     self.y = 0

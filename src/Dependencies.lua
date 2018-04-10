@@ -23,11 +23,13 @@ require 'src/states/StartState'
 gTextures = {
 	['background'] = love.graphics.newImage('graphics/background.png'), --from https://opengameart.org/content/bulkhead-walls-hangar
 	['tiles'] = love.graphics.newImage('graphics/tilesheet.png'), --from 
-	['player'] = love.graphics.newImage('graphics/MainSprite.png')
+	['player'] = love.graphics.newImage('graphics/MainSprite.png'),
+	['SoldierSprites'] = love.graphics.newImage('graphics/SoldierSprites.png')
 }
 
 gFrames = {
-	['tiles'] = GenerateQuads(gTextures['tiles'], 48, 48)
+	['tiles'] = GenerateQuads(gTextures['tiles'], 48, 48),
+	['SoldierSprites'] = GenerateQuads(gTextures['SoldierSprites'], 25, 34)
 }
 
 gSounds = {
