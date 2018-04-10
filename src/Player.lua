@@ -84,13 +84,17 @@ function Player:update(dt)
         gSounds['footsteps']:play()
     end
 
-    --shooting!
+    --shooting! Just sounds right now.
     if love.mouse.wasPressed(1) then
-        gSounds['gunshot']:play() 
-        gSounds['shellcase']:play()
-    end
+        local gunshot = love.audio.newSource('sounds/gunshot.mp3')
+        gunshot:play()
 
-    if love.mouse.wasPressed(2) then gSounds['autofire']:play() end
+        Timer.after(math.random(), function ()
+                local shellcase = love.audio.newSource('sounds/shellcase.mp3')
+                shellcase:play() 
+            end
+        )
+    end
 end
 
 function Player:collides(target)
