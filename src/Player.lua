@@ -28,13 +28,11 @@ end
 
 function Player:update(dt)
 
-    --x, y = push:toGame(self.x, self.y)
     mX, mY = push:toGame(love.mouse.getPosition())
     mX = mX + (self.x - VIRTUAL_WIDTH / 2)
     mY = mY + (self.y - VIRTUAL_HEIGHT / 2)
 
     self.angle = findRotation(self.x, self.y, mX, mY), math.pi * 2
-    --print("X: " ..  self.x .. " Y: " ..  self.y .. " Mouse X: " ..  mX .. " mY: " ..  mY .. " angle: " .. self.angle)
 
     --handle movement
     local dx, dy = 0, 0
@@ -57,7 +55,7 @@ function Player:update(dt)
     end
 
     speed = 1
-    if love.keyboard.isDown('lshift') then speed = 4 end
+    if love.keyboard.isDown('lshift') then speed = 2 end
     dx = dx * speed
     dy = dy * speed
 
@@ -88,6 +86,7 @@ function Player:update(dt)
     if love.mouse.wasPressed(1) then
         local gunshot = love.audio.newSource('sounds/gunshot.mp3')
         gunshot:play()
+        self:fire()
 
         Timer.after(math.random(), function ()
                 local shellcase = love.audio.newSource('sounds/shellcase.mp3')
@@ -95,6 +94,11 @@ function Player:update(dt)
             end
         )
     end
+end
+
+function Player:fire()
+    b = Bullet(self.x, self.y, self.angle, 10, self.map)
+    table.insert(self.map.entities, b)
 end
 
 function Player:collides(target)

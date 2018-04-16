@@ -1,6 +1,8 @@
 Class = require 'lib/class'
 push = require 'lib/push'
 Timer = require 'lib/knife.timer'
+--LightWorld = require 'lib/light_world.main'
+
 
 require 'src/StateMachine'
 require 'src/Util'
@@ -12,6 +14,7 @@ require 'src/Entity'
 require 'src/entity_defs'
 require 'src/GameObject'
 require 'src/Hitbox'
+require 'src/Bullet'
 
 require 'src/states/entity/player/PlayerIdleState'
 require 'src/states/entity/player/PlayerWalkState'

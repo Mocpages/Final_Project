@@ -15,6 +15,7 @@ function PlayState:enter(params)
 end
 
 function PlayState:update(dt)
+    self.map:update()
     if love.keyboard.wasPressed('escape') then
         love.event.quit()
     end

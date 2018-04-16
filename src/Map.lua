@@ -17,10 +17,17 @@ function Map:init(player)
     self.rooms = {}
 
     self:generateMap(self)
+
 end
 
 function Map:update()
+	for k, v in pairs(self.entities) do
+		v:update()
+	end
 
+	for k,v in pairs(self.objects) do
+		v:update()
+	end
 end
 
 function Map:render()
@@ -37,6 +44,14 @@ function Map:render()
                 (y - 1) * TILE_SIZE + self.renderOffsetY)
 			::done::
 		end
+	end
+
+	for k, v in pairs(self.entities) do
+		v:render()
+	end
+
+	for k,v in pairs(self.objects) do
+		v:render()
 	end
 
 	--love.graphics.pop()
