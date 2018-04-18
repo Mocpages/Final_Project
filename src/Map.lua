@@ -18,6 +18,7 @@ function Map:init(player)
 
     self:generateMap(self)
 
+    self.world = bump.newWorld(100)
 end
 
 function Map:update()
