@@ -1,6 +1,7 @@
 Class = require 'lib/class'
 push = require 'lib/push'
 Timer = require 'lib/knife.timer'
+bump = require 'lib/bump.bump'
 --LightWorld = require 'lib/light_world.main'
 
 

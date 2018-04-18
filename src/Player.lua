@@ -56,6 +56,8 @@ function Player:update(dt)
 
     speed = 1
     if love.keyboard.isDown('lshift') then speed = 2 end
+
+    if love.keyboard.isDown("space") then print("x: " .. self.x .. " y: " .. self.y .. " angle: " .. self.angle) end --for debugging
     dx = dx * speed
     dy = dy * speed
 
