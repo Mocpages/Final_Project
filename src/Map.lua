@@ -19,6 +19,7 @@ function Map:init(player)
     self:generateMap(self)
 
     self.world = bump.newWorld(100)
+    self.walls = {}
 end
 
 function Map:update()
@@ -58,81 +59,6 @@ function Map:render()
 	--love.graphics.pop()
 end
 
-function Map:GenerateRoom(xOffset, YOffset, height, width, floor)
-	maxDoors = MAP_HEIGHT / 2 + MAP_WIDTH / 2
-	baseDoor = math.random(1, maxDoors)
-
-	markerX = math.random(2 + xOffset, width-1 + xOffset)
-	markerY = math.random(2 + YOffset, height-1 + YOffset)
-
-	for y = 1 + YOffset, height + YOffset do
-		table.insert(self.tiles, {})
-		for x = 1 + xOffset, width + xOffset do
-			local id = TILE_EMPTY
-
-            if x == 1 + xOffset and y == 1 + YOffset then
-                id = TILE_TOP_LEFT_CORNER
-            elseif x == 1 + xOffset and y == height + YOffset then
-                id = TILE_BOTTOM_LEFT_CORNER
-            elseif x == width + xOffset and y == 1 + YOffset then
-                id = TILE_TOP_RIGHT_CORNER
-            elseif x == width + xOffset and y == height + YOffset then
-                id = TILE_BOTTOM_RIGHT_CORNER
-            
-            -- random left-hand walls, right walls, top, bottom, and floors
-            elseif x == 1 + xOffset then
-                id = TILE_LEFT_WALLS[math.random(#TILE_LEFT_WALLS)]
-               -- if not self.tiles[y][x-1] == 48 then self.tiles[y][x-1] = 3 end
-            elseif x == width + xOffset then
-                id = TILE_RIGHT_WALLS[math.random(#TILE_RIGHT_WALLS)]
-                --if not self.tiles[y][x+1] == 48 then self.tiles[y][x+1] = 2  end
-            elseif y == 1 + YOffset then
-                id = TILE_TOP_WALLS[math.random(#TILE_TOP_WALLS)]
-                if y<=1 then goto top end
-                --if not self.tiles[y-1][x] == 48 then self.tiles[y-1][x] = 1 end
-                ::top::
-            elseif y == height + YOffset then
-                id = TILE_BOTTOM_WALLS[math.random(#TILE_BOTTOM_WALLS)]
-                --if not self.tiles[y+1][x] == 48 then self.tiles[y+1][x] = 5 end
-            elseif x == markerX and  y == markerY then
-            	id = TILE_FLOOR_SYMBOLS[floor]
-            else
-				id = TILE_FLOORS[math.random(#TILE_FLOORS)]
-            end
-            
-            if y == yOffset and x == xOffset then id = 10 end
-            self.tiles[y][x] = id
-		end
-	end
-end
-
-function Map:interiorWalls(x, y, id)
-	--if adjacent tile is blank, do nothing
-	if self.tiles[y][x] == 48 then return end
-	--if adj. tile is a floor, replace with the other-side wall
-	if isInTable(self.tiles[y][x], TILE_FLOORS) or isInTable(self.tiles[y][x], SYMBOLS) then
-		if id == 2 then
-			return 3
-		elseif id == 3 then
-			return 2
-		elseif id == 1 then
-			return 5
-		else
-			return 1
-		end
-	end
-	--if adj. tile is a wall, 
-
-end
-
-function Map:getInteriorWalls(x, y, id)
-	--get all interior walls in the room and send to array, so that I can later add a door.
-	if self.tiles[y][x] == 48 then return false end
-	table.insert()
-	return true
-end
-
-
 function Map:generateMap()
 	walls = {}
 	for y= 1, 100 do
@@ -166,20 +92,9 @@ function Map:generateMap()
 	end
 
 	floor = math.random(7)
-	--self:GenerateRoom(50, 50, 100, 100, floor)
-
-	--for i=1,10 do
-	--	self:generateRandomRoom(floor)
-	--end
-
-	--table.insert(self.rooms, {{0,0}, {100, 100}})
 	self:generateLoopDungeon(100)
 
 	
-end
-
-function Map:generateRandomRoom(floor)
-	self:GenerateRoom(math.random(0, 20), math.random(0, 20), math.random(1, 4)*3, math.random(1, 4)*3, floor)
 end
 
 function Map:generateVerticalWall(startX, startY, endY)
