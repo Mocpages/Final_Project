@@ -8,7 +8,7 @@ function Player:init(x, y)
 
 
     self.texture = 'SoldierSprites'
-    self.skin = math.random(6)
+    self.skin = 4--math.random(6)
 
     --self.width = self.texture:getWidth()
     --self.height = self.texture['player']:getHeight()
@@ -20,10 +20,12 @@ function Player:init(x, y)
     self.originY = 9
 
     self.map = nil
+    self.rect = {name = "player"}
 end
 
 function Player:setMap(map)
     self.map = map
+    self.map.world:add(self.rect, self.x, self.y, self.width, self.height)
 end
 
 function Player:update(dt)
@@ -57,26 +59,26 @@ function Player:update(dt)
     speed = 1
     if love.keyboard.isDown('lshift') then speed = 2 end
 
-    if love.keyboard.isDown("space") then print("x: " .. self.x .. " y: " .. self.y .. " angle: " .. self.angle) end --for debugging
     dx = dx * speed
     dy = dy * speed
 
     newX = self.x + dx
     newY = self.y + dy
 
-    --Don't walk over walls and things
-    if isInTable(self.map.tiles[math.floor(newY / TILE_SIZE)][math.floor((newX + 24) / TILE_SIZE)-1], TILE_LEFT_WALLS) then -- left wall
-        self.y = newY
-    elseif isInTable(self.map.tiles[math.floor(newY / TILE_SIZE)][math.floor((newX - 24) / TILE_SIZE)-1], TILE_RIGHT_WALLS) then--right wall
-        self.y = newY
-    elseif isInTable(self.map.tiles[math.floor((newY + 24) / TILE_SIZE)][math.floor((newX) / TILE_SIZE)-1], TILE_TOP_WALLS) then --top walls.
+    local actX, actY, collisions, lenCol = self.map.world:check(self.rect, newX, newY)
+    print("Num Collisions: " .. lenCol)
+
+    self.rect.x = newX
+    self.rect.y = newY
+
+    if lenCol == 0 then 
         self.x = newX
-    elseif isInTable(self.map.tiles[math.floor((newY - 24)/ TILE_SIZE)][math.floor((newX) / TILE_SIZE)-1], TILE_BOTTOM_WALLS) then --take a wild guess
-        self.x = newX
+        self.y = newY
+        self.map.world:move(self.rect, newX, newY)
     else
-        self.x = newX
-        self.y = newY
+
     end
+    self.map.world:update(self.rect, actualX, actualY)
 
     if dx == 0 then --not moving
         gSounds['footsteps']:stop()
@@ -96,6 +98,8 @@ function Player:update(dt)
             end
         )
     end
+
+    if love.keyboard.isDown("space") then print("x: " .. self.x .. " y: " .. self.y .. " angle: " .. self.angle) end --for debugging
 end
 
 function Player:fire()

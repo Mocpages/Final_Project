@@ -11,15 +11,12 @@ function Map:init(player)
 	self.renderOffsetX = MAP_RENDER_OFFSET_X
     self.renderOffsetY = MAP_RENDER_OFFSET_Y
 
-	self.cameraX = 0
-    self.cameraY = 0
-
     self.rooms = {}
 
+    self.world = bump.newWorld(48)
     self:generateMap(self)
 
-    self.world = bump.newWorld(100)
-    self.walls = {}
+    self.walls = {} --deprecated
 end
 
 function Map:update()
@@ -33,8 +30,6 @@ function Map:update()
 end
 
 function Map:render()
-	--love.graphics.push()
-
 	love.graphics.translate(push:toReal(VIRTUAL_WIDTH / 2 - self.player.x,  VIRTUAL_HEIGHT / 2 -self.player.y))
 	
     for y = 1, #self.tiles do
@@ -55,8 +50,6 @@ function Map:render()
 	for k,v in pairs(self.objects) do
 		v:render()
 	end
-
-	--love.graphics.pop()
 end
 
 function Map:generateMap()
@@ -115,7 +108,6 @@ function Map:generateVerticalWall(startX, startY, endY)
 end
 
 function Map:generateHorizontalWall(startX, startY, endX)
-	--direction of 0 = vertical, 1 = horizontal
 	if startX == 1 then self.tiles[startY][startX] = 4 end
 	x = startX+1
 	y = startY
@@ -123,10 +115,16 @@ function Map:generateHorizontalWall(startX, startY, endX)
 	while x <= endX do
 		self.tiles[y][x] = 5
 		x = x + 1
+
+		local rect = {name = 'wall', x=x, y=y, w=48, h=48}
+		self.world:add(rect, x, y, 48, 48)
 	end
 	--do ends of the wall
 	self.tiles[y][endX] = 8
 	self.tiles[y][math.floor(midpoint)] = 10
+
+	--local rect = {name = 'wall', x=x, y=y, w=48, h=48}
+	--self.world:add(rect, x, y, 48, endX - startX)
 end
 
 function isInTable(value, table)
@@ -135,20 +133,6 @@ function isInTable(value, table)
 	end
 	return false
 end
-
---function Map:generateRecursiveDungeon(iterations, maxIterations)
---	if iterations > maxIterations then return end --this is our recursion end condition
---
---	isVertical = (math.random(0,1)==1)
-
---	if isVertical then
---		self:generateVerticalWall()
---	else
---		self:generateHorizontalWall()
---	end
-
---	return self:generateRecursiveDungeon(iterations + 1, maxIterations)
---end
 
 function Map:generateLoopDungeon(numWalls)
 	for i=1,numWalls do

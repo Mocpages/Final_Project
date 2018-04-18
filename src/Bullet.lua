@@ -25,8 +25,8 @@ function Bullet:init(x, y, angle, damage, map)
 end
 
 function Bullet:update(dt)
-  	newX = self.x + self.dx
-    newY = self.y + self.dy
+  	newX = self.x + self.dx * 5
+    newY = self.y + self.dy * 5
 
     --if isInTable(self.map.tiles[math.floor(y)][math.floor(x)], TILE_FLOORS) then
     --if isInTable(self.map.tiles[math.floor(y)][math.floor(x)], TILE_FLOORS) or isInTable(self.map.tiles[math.floor(y)][math.floor(x)], SYMBOLS) then 
