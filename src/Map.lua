@@ -102,7 +102,7 @@ function Map:generateRectangles() --this will add the wall rectangles for Bump, 
 				self.world:add(rect, x * 48 +72, (y+1) * 48 + 16, 48, 1)
 			elseif tile == 2 then --left wall
 				local rect = {name = 'left_wall', x = x * 48, y = (y+1) * 48, w=48, h=1}
-				self.world:add(rect, (x-3) * 48 - 40, (y-1) * 48 + 72, 1, 48)
+				self.world:add(rect, (x+3) * 48 - 80, (y-1) * 48 + 72, 1, 48)
 			elseif tile == 3 then --right wall
 				local rect = {name = 'right_wall', x = x * 48, y = (y+1) * 48, w=48, h=1}
 				self.world:add(rect, (x+3) * 48 - 40, (y-1) * 48 + 72, 1, 48)
