@@ -5,7 +5,7 @@ function Bullet:init(x, y, angle, damage, map)
 	self.offsetX = x
 	self.offsetY = y
 
-	self.x = x + 12
+	self.x = x
 	self.y = y
 
 	self.angle = angle + math.pi
@@ -18,24 +18,43 @@ function Bullet:init(x, y, angle, damage, map)
     self.canvas = love.graphics.newCanvas(2, 6)
     self.dead = false
 
-    --print("x: " .. x .. " y: " .. y .. " angle: " .. angle)
-    self.x = self.map.player.x
-    self.y = self.map.player.y
-    --print("x: " .. self.x .. " y: " .. self.y .. " angle: " .. self.angle)
+
+    --self.x = self.map.player.x
+    --self.y = self.map.player.y
+    
+    self.rect = {name = "bullet"}
+    self.map.world:add(self.rect, self.x, self.y, 2, 2)
+
+    self:offset() --So we don't shoot ourselves
+end
+
+function Bullet:offset()
+	dx = -math.sin(self.angle)
+	dy = math.cos(self.angle)
+
+	self.x = self.x + dx * 40
+	self.y = self.y + dy * 40
 end
 
 function Bullet:update(dt)
   	newX = self.x + self.dx * 5
     newY = self.y + self.dy * 5
 
-    --if isInTable(self.map.tiles[math.floor(y)][math.floor(x)], TILE_FLOORS) then
-    --if isInTable(self.map.tiles[math.floor(y)][math.floor(x)], TILE_FLOORS) or isInTable(self.map.tiles[math.floor(y)][math.floor(x)], SYMBOLS) then 
-    --if isInTable(self.map.tiles[math.floor(newY)][math.floor(newX)], TILE_FLOORS) or isInTable(self.map.tiles[math.floor(newY)][math.floor(newX)], SYMBOLS)then 
-    	self.x = newX
-    	self.y = newY
-    --else
-    --	self.dead = true
-    --end
+    collidables = {"top_wall", "bottom_wall", "left_wall", "right_wall"}
+    local actualX, actualY, cols, len = self.map.world:move(self.rect, newX, newY)
+    --print(len)
+    if len > 0 then --if we collided with something
+    	for i=1,len do
+    		print(cols[i].other.name)
+    		if isInTable(cols[i].other.name, collidables) then self.dead = true end
+    		--if not cols[i].item.other == "player" then self.dead = true end
+    		--if not cols[i].item.name == "bullet" then bs.die() end
+    	end
+    end
+    self.x = actualX
+    self.y = actualY
+
+    self.map.world:update(self.rect, actualX, actualY)
 
     self.canvas:renderTo( function() love.graphics.clear(255, 0, 0, 255) end)
 end

@@ -57,7 +57,7 @@ function Player:update(dt)
     end
 
     speed = 1
-    if love.keyboard.isDown('lshift') then speed = 2 end
+    if love.keyboard.isDown('lshift') then speed = 20 end
 
     dx = dx * speed
     dy = dy * speed
@@ -66,18 +66,14 @@ function Player:update(dt)
     newY = self.y + dy
 
     local actX, actY, collisions, lenCol = self.map.world:check(self.rect, newX, newY)
-    print("Num Collisions: " .. lenCol)
 
     self.rect.x = newX
     self.rect.y = newY
 
-    if lenCol == 0 then 
-        self.x = newX
-        self.y = newY
-        self.map.world:move(self.rect, newX, newY)
-    else
+    local actualX, actualY, cols, len = self.map.world:move(self.rect, newX, newY)
+    self.x = actualX
+    self.y = actualY
 
-    end
     self.map.world:update(self.rect, actualX, actualY)
 
     if dx == 0 then --not moving

@@ -21,6 +21,7 @@ end
 
 function Map:update()
 	for k, v in pairs(self.entities) do
+		if v.dead then self.entities[k] = nil end
 		v:update()
 	end
 
@@ -86,12 +87,31 @@ function Map:generateMap()
 
 	floor = math.random(7)
 	self:generateLoopDungeon(100)
+	self:generateRectangles()
+end
 
-	
+function Map:generateRectangles() --this will add the wall rectangles for Bump, so collisions happen.
+	for y= 1, 100 do
+		for x=1, 100 do
+			local tile = self.tiles[y][x]
+			if tile == 5 then --top wall
+				local rect = {name = 'top_wall', x = x * 48, y = (y+1) * 48, w=48, h=1}
+				self.world:add(rect, x * 48 + 72, (y+1) * 48 - 16, 48, 1)
+			elseif tile == 1 then --bottom wall
+				local rect = {name = 'bottom_wall', x = x * 48, y = (y+1) * 48 + 16, w=48, h=1}
+				self.world:add(rect, x * 48 +72, (y+1) * 48 + 16, 48, 1)
+			elseif tile == 2 then --left wall
+				local rect = {name = 'left_wall', x = x * 48, y = (y+1) * 48, w=48, h=1}
+				self.world:add(rect, (x-3) * 48 - 40, (y-1) * 48 + 72, 1, 48)
+			elseif tile == 3 then --right wall
+				local rect = {name = 'right_wall', x = x * 48, y = (y+1) * 48, w=48, h=1}
+				self.world:add(rect, (x+3) * 48 - 40, (y-1) * 48 + 72, 1, 48)
+			end --if it isn't a wall, it doesn't get a collider
+		end
+	end
 end
 
 function Map:generateVerticalWall(startX, startY, endY)
-	--direction of 0 = vertical, 1 = horizontal
 	x = startX
 	y = startY+1
 	midpoint = ((endY + y) / 2)
@@ -115,16 +135,10 @@ function Map:generateHorizontalWall(startX, startY, endX)
 	while x <= endX do
 		self.tiles[y][x] = 5
 		x = x + 1
-
-		local rect = {name = 'wall', x=x, y=y, w=48, h=48}
-		self.world:add(rect, x, y, 48, 48)
 	end
 	--do ends of the wall
 	self.tiles[y][endX] = 8
 	self.tiles[y][math.floor(midpoint)] = 10
-
-	--local rect = {name = 'wall', x=x, y=y, w=48, h=48}
-	--self.world:add(rect, x, y, 48, endX - startX)
 end
 
 function isInTable(value, table)
