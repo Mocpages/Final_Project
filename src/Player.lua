@@ -76,6 +76,13 @@ function Player:update(dt)
 
     self.map.world:update(self.rect, actualX, actualY)
 
+    --get shot! yaa- um. Well. (handles collisions which do stuff, I.E. bullets, grenades, etc) 
+    if len > 0 then --if we collided with something
+        for i=1,len do --go over everything we collided with
+            if cols[i].other.name == 'bullet' then  end --If it's a bullet, crash the game!
+        end
+    end
+
     if dx == 0 then --not moving
         gSounds['footsteps']:stop()
     else
@@ -99,7 +106,7 @@ function Player:update(dt)
 end
 
 function Player:fire()
-    b = Bullet(self.x, self.y, self.angle, 10, self.map)
+    b = Bullet(self.x, self.y, self.angle, 10, self.map, self.rect)
     table.insert(self.map.entities, b)
 end
 

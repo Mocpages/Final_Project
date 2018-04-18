@@ -1,6 +1,6 @@
 Bullet = Class{}
 
-function Bullet:init(x, y, angle, damage, map)
+function Bullet:init(x, y, angle, damage, map, parent)
 	--print("x: " .. x .. " y: " .. y .. " angle: " .. angle)
 	self.offsetX = x
 	self.offsetY = y
@@ -11,6 +11,7 @@ function Bullet:init(x, y, angle, damage, map)
 	self.angle = angle + math.pi
 	self.damage = damage
 	self.map = map
+	self.parent = parent
 
 	self.dx = math.sin(self.angle) 
     self.dy = -math.cos(self.angle)
@@ -45,10 +46,12 @@ function Bullet:update(dt)
     --print(len)
     if len > 0 then --if we collided with something
     	for i=1,len do
-    		print(cols[i].other.name)
-    		if isInTable(cols[i].other.name, collidables) then self.dead = true end
-    		--if not cols[i].item.other == "player" then self.dead = true end
-    		--if not cols[i].item.name == "bullet" then bs.die() end
+    		if cols[i].other.name == self.parent.name then 
+    			--doesn't work with a not-statement, so we're doing an empty if-else ¯\_(ツ)_/¯
+    		else
+    			self.dead = true
+    			--Why does this work but the other way doesn't? He screams, for he does not know.
+    		end
     	end
     end
     self.x = actualX

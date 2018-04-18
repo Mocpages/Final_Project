@@ -16,7 +16,7 @@ function Map:init(player)
     self.world = bump.newWorld(48)
     self:generateMap(self)
 
-    self.walls = {} --deprecated
+    table.insert(self.entities, Traitor(self.player.x + 100, self.player.y + 100, self.world, self.player))
 end
 
 function Map:update()
@@ -31,6 +31,8 @@ function Map:update()
 end
 
 function Map:render()
+
+	love.graphics.print("Current FPS: "..tostring(love.timer.getFPS( )), 10, 10)
 	love.graphics.translate(push:toReal(VIRTUAL_WIDTH / 2 - self.player.x,  VIRTUAL_HEIGHT / 2 -self.player.y))
 	
     for y = 1, #self.tiles do

@@ -16,6 +16,7 @@ require 'src/entity_defs'
 require 'src/GameObject'
 require 'src/Hitbox'
 require 'src/Bullet'
+require 'src/Traitor'
 
 require 'src/states/entity/player/PlayerIdleState'
 require 'src/states/entity/player/PlayerWalkState'
