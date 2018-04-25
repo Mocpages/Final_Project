@@ -15,8 +15,6 @@ function Map:init(player)
 
     self.world = bump.newWorld(48)
     self:generateMap(self)
-
-    table.insert(self.entities, Traitor(self.player.x + 100, self.player.y + 100, self.world, self.player))
 end
 
 function Map:update()
@@ -32,6 +30,22 @@ function Map:update()
 	for k, v in pairs(self.entities) do
 		if v.dead then self.entities[k] = nil end
 	end
+end
+
+function Map:populateEntities()
+	--Traitors first!
+	numTraitors = math.random(5, 15)
+	for i=1, numTraitors do
+		foundValid = false
+		x, y = 0, 0
+		while not foundValid do
+			x, y = math.random(0, 100), math.random(0, 100)
+			if isInTable(self.tiles[y][x], TILE_FLOORS) then foundValid = true end
+		end
+		table.insert(self.entities, Traitor(x, y, self.world, self.player)
+	end
+
+	--here is where things other than traitors will go. for now, however, traitors are the only thing we have ¯\_(ツ)_/¯
 end
 
 function Map:render()
