@@ -34,15 +34,16 @@ end
 
 function Map:populateEntities()
 	--Traitors first!
-	numTraitors = math.random(5, 15)
+	numTraitors = math.random(30, 50)
+	print(numTraitors)
 	for i=1, numTraitors do
 		foundValid = false
 		x, y = 0, 0
 		while not foundValid do
-			x, y = math.random(0, 100), math.random(0, 100)
+			x, y = math.random(1, 100), math.random(1, 100)
 			if isInTable(self.tiles[y][x], TILE_FLOORS) then foundValid = true end
 		end
-		table.insert(self.entities, Traitor(x, y, self.world, self.player)
+		table.insert(self.entities, Traitor(x * 48, y * 48, self.world, self.player))
 	end
 
 	--here is where things other than traitors will go. for now, however, traitors are the only thing we have ¯\_(ツ)_/¯
@@ -108,6 +109,7 @@ function Map:generateMap()
 	floor = math.random(7)
 	self:generateLoopDungeon(100)
 	self:generateRectangles()
+	self:populateEntities()
 end
 
 function Map:generateRectangles() --this will add the wall rectangles for Bump, so collisions happen.
