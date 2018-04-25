@@ -46,9 +46,13 @@ function Bullet:update(dt)
     --print(len)
     if len > 0 then --if we collided with something
     	for i=1,len do
-    		if cols[i].other.name == self.parent.name then 
+    		if cols[i].other.name == self.parent.name or cols[i].other.name == "bullet" then 
     			--doesn't work with a not-statement, so we're doing an empty if-else ¯\_(ツ)_/¯
+    		elseif cols[i].other.name == 'player' then
+    			print("playah!")
+    			self.dead = true
     		else
+    			--print(cols[i].other.name)
     			self.dead = true
     			--Why does this work but the other way doesn't? He screams, for he does not know.
     		end
