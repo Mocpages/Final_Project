@@ -48,8 +48,9 @@ function Bullet:update(dt)
     	for i=1,len do
     		if cols[i].other.name == self.parent.name or cols[i].other.name == "bullet" then 
     			--doesn't work with a not-statement, so we're doing an empty if-else ¯\_(ツ)_/¯
-    		elseif cols[i].other.name == 'player' then
+    		elseif cols[i].other.name == 'player' or cols[i].other.name == 'traitor' then
     			print("playah!")
+    			cols[i].other.parent:damage(self.damage, 'bullet')
     			self.dead = true
     		else
     			--print(cols[i].other.name)

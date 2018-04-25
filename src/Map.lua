@@ -21,12 +21,16 @@ end
 
 function Map:update()
 	for k, v in pairs(self.entities) do
-		if v.dead then self.entities[k] = nil end
 		v:update()
 	end
 
 	for k,v in pairs(self.objects) do
 		v:update()
+	end
+
+	--Can't do this above because editing while iterating is bad,folks!
+	for k, v in pairs(self.entities) do
+		if v.dead then self.entities[k] = nil end
 	end
 end
 

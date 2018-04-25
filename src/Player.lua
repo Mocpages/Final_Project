@@ -20,7 +20,8 @@ function Player:init(x, y)
     self.originY = 9
 
     self.map = nil
-    self.rect = {name = "player"}
+    self.rect = {name = "player", parent = self}
+    self.health = 30
 end
 
 function Player:setMap(map)
@@ -119,7 +120,6 @@ end
 
 function Player:render()
     love.graphics.draw(gTextures[self.texture], gFrames[self.texture][self.skin], self.x, self.y, self.angle, 1, 1, self.originX, self.originY)
-    --love.graphics.draw(gTextures['player'], VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2, self.angle, 1, 1, self.originX, self.originY)
 end
 
 function findRotation(x1,y1,x2,y2)
@@ -131,4 +131,10 @@ function isInTable(value, table)
         if v == value then return true end
     end
     return false
+end
+
+function Player:damage(damage, source)
+    print(self.health)
+    self.health = self.health - damage
+    if self.health <= 0 then gameover.die() end --will bluescreen as a stand-in for a game over state.
 end

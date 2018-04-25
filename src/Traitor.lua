@@ -1,4 +1,4 @@
-Traitor = Class{}
+Traitor = Class{} --this really should extend player - TODO
 
 function Traitor:init(x, y, world, player)
     self.x = x
@@ -21,12 +21,15 @@ function Traitor:init(x, y, world, player)
 
     self.world = world
     self.player = player
-    self.rect = {name = "traitor"}
+    self.rect = {name = "traitor", parent = self}
     self.rangeRect = {name = "vision"}
     self.world:add(self.rect, self.x, self.y, self.width, self.height)
      self.world:add(self.rangeRect, self.x, self.y, 192, 192)
 
-    --shooting! Just sounds right now.
+     self.health = 5
+     self.dead = false
+
+    --shooting! Has to be done here, or we end up with dozens of timers.
     self.shoot = false
     Timer.every(0.2, function()
             --local gunshot = love.audio.newSource('sounds/gunshot.mp3')
@@ -44,6 +47,7 @@ function Traitor:init(x, y, world, player)
 end
 
 function Traitor:update(dt)
+    if self.dead then return end --don't update if we're dead, just wait for trash collection.
     --always point towards player
     self.angle = self.angle + 0.01
 
@@ -84,8 +88,9 @@ function Traitor:collides(target)
 end
 
 function Traitor:render()
-    love.graphics.draw(gTextures[self.texture], gFrames[self.texture][self.skin], self.x, self.y, self.angle, 1, 1, self.originX, self.originY)
-    --love.graphics.draw(gTextures['player'], VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2, self.angle, 1, 1, self.originX, self.originY)
+    if not self.dead then 
+        love.graphics.draw(gTextures[self.texture], gFrames[self.texture][self.skin], self.x, self.y, self.angle, 1, 1, self.originX, self.originY)
+    end
 end
 
 function findRotation(x1,y1,x2,y2)
@@ -97,4 +102,10 @@ function isInTable(value, table)
         if v == value then return true end
     end
     return false
+end
+
+function Traitor:damage(damage, source)
+    print(self.health)
+    self.health = self.health - damage
+    if self.health <= 0 then self.dead = true end --will bluescreen for testing
 end
