@@ -50,3 +50,7 @@ function PlayState:render()
     self.map:render()
     self.player:render()
 end
+
+function PlayState:exit()
+
+end

@@ -24,12 +24,14 @@ require 'src/states/entity/player/PlayerWalkState'
 
 require 'src/states/PlayState'
 require 'src/states/StartState'
+require 'src/states/DeathState'
 
 gTextures = {
 	['background'] = love.graphics.newImage('graphics/background.png'), --from https://opengameart.org/content/bulkhead-walls-hangar
 	['tiles'] = love.graphics.newImage('graphics/tilesheet.png'), --from 
 	['player'] = love.graphics.newImage('graphics/MainSprite.png'),
-	['SoldierSprites'] = love.graphics.newImage('graphics/SoldierSprites.png')
+	['SoldierSprites'] = love.graphics.newImage('graphics/SoldierSprites.png'),
+	['death'] = love.graphics.newImage('graphics/gameOver.jpg')
 }
 
 gFrames = {

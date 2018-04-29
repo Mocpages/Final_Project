@@ -13,7 +13,8 @@ function love.load()
 
     gStateMachine = StateMachine {
         ['start'] = function() return StartState() end,
-        ['play'] = function() return PlayState() end
+        ['play'] = function() return PlayState() end,
+        ['death'] = function() return DeathState() end
     }
     gStateMachine:change('start')
 

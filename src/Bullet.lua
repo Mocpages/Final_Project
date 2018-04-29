@@ -42,7 +42,7 @@ function Bullet:update(dt)
     newY = self.y + self.dy * 5
 
     collidables = {"top_wall", "bottom_wall", "left_wall", "right_wall"}
-    local actualX, actualY, cols, len = self.map.world:move(self.rect, newX, newY)
+    local actualX, actualY, cols, len = self.map.world:move(self.rect, newX, newY, bulletFilter)
     --print(len)
     if len > 0 then --if we collided with something
     	for i=1,len do
@@ -65,6 +65,11 @@ function Bullet:update(dt)
     self.map.world:update(self.rect, actualX, actualY)
 
     self.canvas:renderTo( function() love.graphics.clear(255, 0, 0, 255) end)
+end
+
+function bulletFilter(player, item)
+    if item.name == 'vision' or item.name == 'bullet' then return 'cross' end
+    return 'touch'
 end
 
 function Bullet:render()

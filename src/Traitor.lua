@@ -22,7 +22,10 @@ function Traitor:init(x, y, world, player)
     self.world = world
     self.player = player
     self.rect = {name = "traitor", parent = self}
+
     self.rangeRect = {name = "vision"}
+    self.rangeRect.filter = function(item, other) print("hi") return 'cross' end
+
     self.world:add(self.rect, self.x, self.y, self.width, self.height)
      self.world:add(self.rangeRect, self.x, self.y, 192, 192)
 
@@ -57,7 +60,7 @@ function Traitor:update(dt)
     --print(lenSpotCol)
     for k,v in pairs(spotted) do
         if v.other.name == 'player' then
-            print("Player spotted")
+            --print("Player spotted")
             self.angle = findRotation(self.x, self.y, self.player.x, self.player.y), math.pi * 2
             if self.shoot then self:fire() end
         end
@@ -107,5 +110,8 @@ end
 function Traitor:damage(damage, source)
     print(self.health)
     self.health = self.health - damage
-    if self.health <= 0 then self.dead = true end --will bluescreen for testing
+    if self.health <= 0 then 
+        self.dead = true
+        self.world:remove(self.rect)
+    end 
 end

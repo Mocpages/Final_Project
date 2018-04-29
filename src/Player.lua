@@ -71,7 +71,7 @@ function Player:update(dt)
     self.rect.x = newX
     self.rect.y = newY
 
-    local actualX, actualY, cols, len = self.map.world:move(self.rect, newX, newY)
+    local actualX, actualY, cols, len = self.map.world:move(self.rect, newX, newY, playerFilter)
     self.x = actualX
     self.y = actualY
 
@@ -80,6 +80,7 @@ function Player:update(dt)
     --get shot! yaa- um. Well. (handles collisions which do stuff, I.E. bullets, grenades, etc) 
     if len > 0 then --if we collided with something
         for i=1,len do --go over everything we collided with
+            --print(cols[i].other.name)
             if cols[i].other.name == 'bullet' then  end --If it's a bullet, crash the game!
         end
     end
@@ -136,5 +137,10 @@ end
 function Player:damage(damage, source)
     print(self.health)
     self.health = self.health - damage
-    if self.health <= 0 then gameover.die() end --will bluescreen as a stand-in for a game over state.
+    if self.health <= 0 then gStateMachine:change('death') end --will bluescreen as a stand-in for a game over state.
+end
+
+function playerFilter(player, item)
+    if item.name == 'vision' then return 'cross' end
+    return 'slide'
 end
