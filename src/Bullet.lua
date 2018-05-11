@@ -1,6 +1,6 @@
 Bullet = Class{}
 
-function Bullet:init(x, y, angle, damage, map, parent)
+function Bullet:init(x, y, angle, damage, map, parent, fireMode)
 	--print("x: " .. x .. " y: " .. y .. " angle: " .. angle)
 	self.offsetX = x
 	self.offsetY = y
@@ -18,6 +18,17 @@ function Bullet:init(x, y, angle, damage, map, parent)
 
     self.canvas = love.graphics.newCanvas(2, 6)
     self.dead = false
+    if fireMode == 4 then 
+        self.speed = 400 
+    elseif fireMode == 3 then
+        self.speed = 300
+    else
+        self.speed = 200
+    end
+
+    self.fireMode = fireMode
+
+    print(fireMode)
 
 
     --self.x = self.map.player.x
@@ -33,8 +44,8 @@ function Bullet:offset()
 	dx = -math.sin(self.angle)
 	dy = math.cos(self.angle)
 
-	self.x = self.x + dx * 40
-	self.y = self.y + dy * 40
+	self.x = self.x + dx * self.speed
+	self.y = self.y + dy * self.speed
 end
 
 function Bullet:update(dt)
@@ -52,7 +63,7 @@ function Bullet:update(dt)
     			print("playah!")
     			cols[i].other.parent:damage(self.damage, 'bullet')
     			self.dead = true
-    		else
+    		elseif cols[i].other.name == 'wall' then
     			--print(cols[i].other.name)
     			self.dead = true
     			--Why does this work but the other way doesn't? He screams, for he does not know.
@@ -68,13 +79,17 @@ function Bullet:update(dt)
 end
 
 function bulletFilter(player, item)
-    if item.name == 'vision' or item.name == 'bullet' then return 'cross' end
+    if item.name == 'vision' or item    .name == 'bullet' then return 'cross' end
     return 'touch'
 end
 
 function Bullet:render()
 	if not self.dead then
-		love.graphics.draw(self.canvas, self.x, self.y, self.angle)
+        if self.fireMode == 4 then
+		  love.graphics.draw(self.canvas, self.x, self.y, self.angle)
+        else
+            love.graphics.draw(gTextures['plasma'], self.x, self.y, self.angle)
+        end
 	end
 end
 

@@ -8,7 +8,7 @@ function Traitor:init(x, y, world, player)
 
 
     self.texture = 'SoldierSprites'
-    self.skin = 1--math.random(6)
+    self.skin = math.random(6)
 
     --self.width = self.texture:getWidth()
     --self.height = self.texture['player']:getHeight()
@@ -27,10 +27,11 @@ function Traitor:init(x, y, world, player)
     self.rangeRect.filter = function(item, other) print("hi") return 'cross' end
 
     self.world:add(self.rect, self.x, self.y, self.width, self.height)
-     self.world:add(self.rangeRect, self.x, self.y, 192, 192)
+    --self.world:add(self.rangeRect, self.x, self.y, 192, 192)
 
      self.health = 5
      self.dead = false
+     self.canSeePlayer = false
 
     --shooting! Has to be done here, or we end up with dozens of timers.
     self.shoot = false
@@ -50,27 +51,33 @@ function Traitor:init(x, y, world, player)
 end
 
 function Traitor:update(dt)
+    self.canSeePlayer = false
     if self.dead then return end --don't update if we're dead, just wait for trash collection.
     --always point towards player
     self.angle = self.angle + 0.01
 
     --local actX, actY, collisions, lenCol = self.world:check(self.rect, newX, newY)
 
-    local othX, othY, spotted, lenSpotCol = self.world:check(self.rangeRect, self.x, self.y)
+    --local othX, othY, spotted, lenSpotCol = self.world:check(self.rangeRect, self.x, self.y)
     --print(lenSpotCol)
-    for k,v in pairs(spotted) do
-        if v.other.name == 'player' then
+    --for k,v in pairs(spotted) do
+      --  if v.other.name == 'player' then
             --print("Player spotted")
-            self.angle = findRotation(self.x, self.y, self.player.x, self.player.y), math.pi * 2
-            if self.shoot then self:fire() end
-        end
-    end
+            local pX, pY = self.player.x, self.player.y
+            local distance = math.sqrt(math.pow(pX - self.x, 2), math.pow(pY - self.y, 2))
+            if  distance <= 10 then--distance
+                self.canSeePlayer = true
+                self.angle = findRotation(self.x, self.y, self.player.x, self.player.y), math.pi * 2
+                if self.shoot then self:fire() end
+            end
+    --end
 
     --if love.keyboard.isDown("space") then print("x: " .. self.x .. " y: " .. self.y .. " angle: " .. self.angle) end --for debugging
 end
 
 function Traitor:fire()
-    b = Bullet(self.x, self.y, self.angle, 10, self.player.map, self.rect)
+    self.cooldown = cooldowns[self.skin]
+    b = Bullet(self.x, self.y, self.angle, 10, self.player.map, self.rect, self.skin)
     table.insert(self.player.map.entities, b)
 
     local gunshot = love.audio.newSource('sounds/gunshot.mp3')

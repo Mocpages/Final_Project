@@ -31,7 +31,8 @@ gTextures = {
 	['tiles'] = love.graphics.newImage('graphics/tilesheet.png'), --from 
 	['player'] = love.graphics.newImage('graphics/MainSprite.png'),
 	['SoldierSprites'] = love.graphics.newImage('graphics/SoldierSprites.png'),
-	['death'] = love.graphics.newImage('graphics/gameOver.jpg')
+	['death'] = love.graphics.newImage('graphics/gameOver.jpg'),
+	['plasma'] = love.graphics.newImage('graphics/plasma.png')
 }
 
 gFrames = {
@@ -51,4 +52,13 @@ gFonts = {
 	['gothic-large'] = love.graphics.newFont('fonts/GothicPixels.ttf', 64),
 	['large'] = love.graphics.newFont('fonts/font.ttf', 32),
 	['extra-large'] = love.graphics.newFont('fonts/font.ttf', 64),
+}
+
+ cooldowns = {
+    [1] = 1,
+    [2] = 1,
+    [3] = 1,
+    [4] = 0.2,
+    [5] = 1,
+    [6] = 1,
 }

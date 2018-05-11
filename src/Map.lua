@@ -117,16 +117,16 @@ function Map:generateRectangles() --this will add the wall rectangles for Bump, 
 		for x=1, 100 do
 			local tile = self.tiles[y][x]
 			if tile == 5 then --top wall
-				local rect = {name = 'top_wall', x = x * 48, y = (y+1) * 48, w=48, h=1}
+				local rect = {name = 'wall', x = x * 48, y = (y+1) * 48, w=48, h=1}
 				self.world:add(rect, x * 48 + 72, (y+1) * 48 - 16, 48, 1)
 			elseif tile == 1 then --bottom wall
-				local rect = {name = 'bottom_wall', x = x * 48, y = (y+1) * 48 + 16, w=48, h=1}
+				local rect = {name = 'wall', x = x * 48, y = (y+1) * 48 + 16, w=48, h=1}
 				self.world:add(rect, x * 48 +72, (y+1) * 48 + 16, 48, 1)
 			elseif tile == 2 then --left wall
-				local rect = {name = 'left_wall', x = x * 48, y = (y+1) * 48, w=48, h=1}
+				local rect = {name = 'wall', x = x * 48, y = (y+1) * 48, w=48, h=1}
 				self.world:add(rect, (x+3) * 48 - 80, (y-1) * 48 + 72, 1, 48)
 			elseif tile == 3 then --right wall
-				local rect = {name = 'right_wall', x = x * 48, y = (y+1) * 48, w=48, h=1}
+				local rect = {name = 'wall', x = x * 48, y = (y+1) * 48, w=48, h=1}
 				self.world:add(rect, (x+3) * 48 - 40, (y-1) * 48 + 72, 1, 48)
 			end --if it isn't a wall, it doesn't get a collider
 		end

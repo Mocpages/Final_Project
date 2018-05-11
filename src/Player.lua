@@ -8,7 +8,7 @@ function Player:init(x, y)
 
 
     self.texture = 'SoldierSprites'
-    self.skin = 4--math.random(6)
+    self.skin = 4
 
     --self.width = self.texture:getWidth()
     --self.height = self.texture['player']:getHeight()
@@ -21,7 +21,9 @@ function Player:init(x, y)
 
     self.map = nil
     self.rect = {name = "player", parent = self}
-    self.health = 30
+    self.health = 300000
+    self.cooldown = 0
+
 end
 
 function Player:setMap(map)
@@ -30,6 +32,7 @@ function Player:setMap(map)
 end
 
 function Player:update(dt)
+    self.cooldown = math.max(0, self.cooldown - dt)
 
     mX, mY = push:toGame(love.mouse.getPosition())
     mX = mX + (self.x - VIRTUAL_WIDTH / 2)
@@ -92,7 +95,7 @@ function Player:update(dt)
     end
 
     --shooting! Just sounds right now.
-    if love.mouse.wasPressed(1) then
+    if love.mouse.wasPressed(1) and self.cooldown <= 0 then
         local gunshot = love.audio.newSource('sounds/gunshot.mp3')
         gunshot:play()
         self:fire()
@@ -105,10 +108,26 @@ function Player:update(dt)
     end
 
     if love.keyboard.isDown("space") then print("x: " .. self.x .. " y: " .. self.y .. " angle: " .. self.angle) end --for debugging
+
+    if love.keyboard.isDown("1") then
+        self.skin = 1
+    elseif love.keyboard.isDown("2") then
+        self.skin = 2
+    elseif love.keyboard.isDown("3") then
+        self.skin = 3
+    elseif love.keyboard.isDown("4") then
+        self.skin = 4
+    elseif love.keyboard.isDown("5") then
+        self.skin = 5
+    elseif love.keyboard.isDown("6") then
+        self.skin = 6
+    end
 end
 
 function Player:fire()
-    b = Bullet(self.x, self.y, self.angle, 10, self.map, self.rect)
+    print(self.cooldown)
+    self.cooldown = cooldowns[self.skin]
+    b = Bullet(self.x, self.y, self.angle, 10, self.map, self.rect, self.skin)
     table.insert(self.map.entities, b)
 end
 
