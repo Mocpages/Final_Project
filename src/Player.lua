@@ -8,7 +8,7 @@ function Player:init(x, y)
 
 
     self.texture = 'SoldierSprites'
-    self.skin = math.random(6)
+    self.skin = 4
 
     --self.width = self.texture:getWidth()
     --self.height = self.texture['player']:getHeight()
@@ -20,21 +20,25 @@ function Player:init(x, y)
     self.originY = 9
 
     self.map = nil
+    self.rect = {name = "player", parent = self}
+    self.health = 300000
+    self.cooldown = 0
+
 end
 
 function Player:setMap(map)
     self.map = map
+    self.map.world:add(self.rect, self.x, self.y, self.width, self.height)
 end
 
 function Player:update(dt)
+    self.cooldown = math.max(0, self.cooldown - dt)
 
-    --x, y = push:toGame(self.x, self.y)
     mX, mY = push:toGame(love.mouse.getPosition())
     mX = mX + (self.x - VIRTUAL_WIDTH / 2)
     mY = mY + (self.y - VIRTUAL_HEIGHT / 2)
 
     self.angle = findRotation(self.x, self.y, mX, mY), math.pi * 2
-    --print("X: " ..  self.x .. " Y: " ..  self.y .. " Mouse X: " ..  mX .. " mY: " ..  mY .. " angle: " .. self.angle)
 
     --handle movement
     local dx, dy = 0, 0
@@ -57,25 +61,31 @@ function Player:update(dt)
     end
 
     speed = 1
-    if love.keyboard.isDown('lshift') then speed = 4 end
+    if love.keyboard.isDown('lshift') then speed = 20 end
+
     dx = dx * speed
     dy = dy * speed
 
     newX = self.x + dx
     newY = self.y + dy
 
-    --Don't walk over walls and things
-    if isInTable(self.map.tiles[math.floor(newY / TILE_SIZE)][math.floor((newX + 24) / TILE_SIZE)-1], TILE_LEFT_WALLS) then -- left wall
-        self.y = newY
-    elseif isInTable(self.map.tiles[math.floor(newY / TILE_SIZE)][math.floor((newX - 24) / TILE_SIZE)-1], TILE_RIGHT_WALLS) then--right wall
-        self.y = newY
-    elseif isInTable(self.map.tiles[math.floor((newY + 24) / TILE_SIZE)][math.floor((newX) / TILE_SIZE)-1], TILE_TOP_WALLS) then --top walls.
-        self.x = newX
-    elseif isInTable(self.map.tiles[math.floor((newY - 24)/ TILE_SIZE)][math.floor((newX) / TILE_SIZE)-1], TILE_BOTTOM_WALLS) then --take a wild guess
-        self.x = newX
-    else
-        self.x = newX
-        self.y = newY
+    local actX, actY, collisions, lenCol = self.map.world:check(self.rect, newX, newY)
+
+    self.rect.x = newX
+    self.rect.y = newY
+
+    local actualX, actualY, cols, len = self.map.world:move(self.rect, newX, newY, playerFilter)
+    self.x = actualX
+    self.y = actualY
+
+    self.map.world:update(self.rect, actualX, actualY)
+
+    --get shot! yaa- um. Well. (handles collisions which do stuff, I.E. bullets, grenades, etc) 
+    if len > 0 then --if we collided with something
+        for i=1,len do --go over everything we collided with
+            --print(cols[i].other.name)
+            if cols[i].other.name == 'bullet' then  end --If it's a bullet, crash the game!
+        end
     end
 
     if dx == 0 then --not moving
@@ -85,9 +95,10 @@ function Player:update(dt)
     end
 
     --shooting! Just sounds right now.
-    if love.mouse.wasPressed(1) then
+    if love.mouse.wasPressed(1) and self.cooldown <= 0 then
         local gunshot = love.audio.newSource('sounds/gunshot.mp3')
         gunshot:play()
+        self:fire()
 
         Timer.after(math.random(), function ()
                 local shellcase = love.audio.newSource('sounds/shellcase.mp3')
@@ -95,6 +106,29 @@ function Player:update(dt)
             end
         )
     end
+
+    if love.keyboard.isDown("space") then print("x: " .. self.x .. " y: " .. self.y .. " angle: " .. self.angle) end --for debugging
+
+    if love.keyboard.isDown("1") then
+        self.skin = 1
+    elseif love.keyboard.isDown("2") then
+        self.skin = 2
+    elseif love.keyboard.isDown("3") then
+        self.skin = 3
+    elseif love.keyboard.isDown("4") then
+        self.skin = 4
+    elseif love.keyboard.isDown("5") then
+        self.skin = 5
+    elseif love.keyboard.isDown("6") then
+        self.skin = 6
+    end
+end
+
+function Player:fire()
+    print(self.cooldown)
+    self.cooldown = cooldowns[self.skin]
+    b = Bullet(self.x, self.y, self.angle, 10, self.map, self.rect, self.skin)
+    table.insert(self.map.entities, b)
 end
 
 function Player:collides(target)
@@ -106,7 +140,6 @@ end
 
 function Player:render()
     love.graphics.draw(gTextures[self.texture], gFrames[self.texture][self.skin], self.x, self.y, self.angle, 1, 1, self.originX, self.originY)
-    --love.graphics.draw(gTextures['player'], VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2, self.angle, 1, 1, self.originX, self.originY)
 end
 
 function findRotation(x1,y1,x2,y2)
@@ -118,4 +151,15 @@ function isInTable(value, table)
         if v == value then return true end
     end
     return false
+end
+
+function Player:damage(damage, source)
+    print(self.health)
+    self.health = self.health - damage
+    if self.health <= 0 then gStateMachine:change('death') end --will bluescreen as a stand-in for a game over state.
+end
+
+function playerFilter(player, item)
+    if item.name == 'vision' then return 'cross' end
+    return 'slide'
 end

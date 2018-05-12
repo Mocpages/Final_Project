@@ -1,0 +1,101 @@
+Bullet = Class{}
+
+function Bullet:init(x, y, angle, damage, map, parent, fireMode)
+	--print("x: " .. x .. " y: " .. y .. " angle: " .. angle)
+	self.offsetX = x
+	self.offsetY = y
+
+	self.x = x
+	self.y = y
+
+	self.angle = angle + math.pi
+	self.damage = damage
+	self.map = map
+	self.parent = parent
+
+	self.dx = math.sin(self.angle) 
+    self.dy = -math.cos(self.angle)
+
+    self.canvas = love.graphics.newCanvas(2, 6)
+    self.dead = false
+    if fireMode == 4 then 
+        self.speed = 400 
+    elseif fireMode == 3 then
+        self.speed = 300
+    else
+        self.speed = 200
+    end
+
+    self.fireMode = fireMode
+
+    print(fireMode)
+
+
+    --self.x = self.map.player.x
+    --self.y = self.map.player.y
+    
+    self.rect = {name = "bullet"}
+    self.map.world:add(self.rect, self.x, self.y, 2, 2)
+
+    self:offset() --So we don't shoot ourselves
+end
+
+function Bullet:offset()
+	dx = -math.sin(self.angle)
+	dy = math.cos(self.angle)
+
+	self.x = self.x + dx * self.speed
+	self.y = self.y + dy * self.speed
+end
+
+function Bullet:update(dt)
+  	newX = self.x + self.dx * 5
+    newY = self.y + self.dy * 5
+
+    collidables = {"top_wall", "bottom_wall", "left_wall", "right_wall"}
+    local actualX, actualY, cols, len = self.map.world:move(self.rect, newX, newY, bulletFilter)
+    --print(len)
+    if len > 0 then --if we collided with something
+    	for i=1,len do
+    		if cols[i].other.name == self.parent.name or cols[i].other.name == "bullet" then 
+    			--doesn't work with a not-statement, so we're doing an empty if-else ¯\_(ツ)_/¯
+    		elseif cols[i].other.name == 'player' or cols[i].other.name == 'traitor' then
+    			print("playah!")
+    			cols[i].other.parent:damage(self.damage, 'bullet')
+    			self.dead = true
+    		elseif cols[i].other.name == 'wall' then
+    			--print(cols[i].other.name)
+    			self.dead = true
+    			--Why does this work but the other way doesn't? He screams, for he does not know.
+    		end
+    	end
+    end
+    self.x = actualX
+    self.y = actualY
+
+    self.map.world:update(self.rect, actualX, actualY)
+
+    self.canvas:renderTo( function() love.graphics.clear(255, 0, 0, 255) end)
+end
+
+function bulletFilter(player, item)
+    if item.name == 'vision' or item    .name == 'bullet' then return 'cross' end
+    return 'touch'
+end
+
+function Bullet:render()
+	if not self.dead then
+        if self.fireMode == 4 then
+		  love.graphics.draw(self.canvas, self.x, self.y, self.angle)
+        else
+            love.graphics.draw(gTextures['plasma'], self.x, self.y, self.angle)
+        end
+	end
+end
+
+function isInTable(value, table)
+    for k, v in pairs(table) do
+        if v == value then return true end
+    end
+    return false
+end

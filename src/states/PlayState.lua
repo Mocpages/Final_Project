@@ -15,6 +15,7 @@ function PlayState:enter(params)
 end
 
 function PlayState:update(dt)
+    self.map:update()
     if love.keyboard.wasPressed('escape') then
         love.event.quit()
     end
@@ -48,4 +49,8 @@ function PlayState:render()
     --love.graphics.translate(self.x, self.y)
     self.map:render()
     self.player:render()
+end
+
+function PlayState:exit()
+
 end
